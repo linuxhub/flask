@@ -1,0 +1,27 @@
+
+
+
+<ul >
+
+<!--  链接到 http://127.0.0.1:5000/user/zeping   -->
+<li> <a href="{{ url_for('user', name='zeping', _external=True)  }}">user/zeping</a> </li>
+
+<!--  链接到 http://127.0.0.1:5000/user/name   -->
+<li> <a href="{{ url_for('user', name='Test', _external=True)  }} ">user/Test</a> </li>
+
+<!-- 链接到首页 http://127.0.0.1:5000/index.html/ -->
+ <li><a href="{{ url_for('index', _external=True)  }}"> index </a></li>
+
+<!--  链接到 http://127.0.0.1:5000/?page=2  -->
+ <li><a href="{{ url_for('index', page=2 )  }}"> page2 </a></li>
+
+
+<!--  静态文件  {{ url_for('static', filename='linuxhub.html' )  }}   -->
+ <li><a href="{{ url_for('static', filename='linuxhub.html' )  }}"> LinuxHub</a></li>
+
+</ul>
+
+<div >
+<!-- 显示页面内容 -->
+{% block page_content %}  {%  endblock %}
+</div>
