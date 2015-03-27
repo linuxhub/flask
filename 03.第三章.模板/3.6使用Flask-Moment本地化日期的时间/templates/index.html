@@ -1,0 +1,26 @@
+
+{{  moment.lang('zh-cn') }}
+
+<h1>Hello , Work !</h1>
+
+<h3>moment</h3>
+<p> 
+The local date and time is {{  moment(current_time).format('LLL') }}.
+</p>
+
+<p>
+That was {{  moment(current_time).fromNow(refresh=True) }}	
+</p>
+
+</br>
+
+<h3>datetime</h3>
+<p>
+Y-M-D:
+ {{ current_time.strftime("%Y-%m-%d ") }}
+</p>
+
+<p>
+H:M:S: 
+ {{ current_time.strftime(" %H:%M:%S") }}
+ </p>
