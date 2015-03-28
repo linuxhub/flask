@@ -1,0 +1,19 @@
+{%  extends "bootstrap/base.html" %}
+{% block title %} Flask {% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-inverse" role="navigation">
+	<div class="container">
+		<div class="navbar-header">
+		    <a class="navbar-brand" href="/">Flasky</a>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	{% block page_content %} 
+	{%  endblock %}
+</div>
+{% endblock %}
