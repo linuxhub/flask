@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #encoding:utf8
 #author: linuxhub.org
-# pip install flask-sqlalchemy
+# pip install flask-sqlalchemy #安装
 
 from flask import Flask
 from flask.ext.sqlalchemy import SQLAlchemy
