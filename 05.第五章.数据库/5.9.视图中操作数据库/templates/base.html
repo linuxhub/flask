@@ -1,0 +1,23 @@
+{%  extends "bootstrap/base.html" %}
+
+<!--  标题  -->
+{% block title %} Flask {% endblock %}
+
+ <!--- 导航条 -->
+{% block navbar %}
+<div class="navbar navbar-inverse" role="navigation">
+              <div class="container">
+                            <div class="navbar-header">
+                                          <a class="navbar-brand" href="/">Flasky</a>
+                            </div>
+              </div>
+</div>
+{% endblock %}
+
+<!--  内容 -->
+{% block content %}
+<div class="container">
+              {% block page_content %} 
+              {%  endblock %}
+</div>
+{% endblock %}
