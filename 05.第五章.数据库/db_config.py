@@ -10,8 +10,8 @@ import os
 #配置数据库
 basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite') #当前目录下的data.sqlite
-app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True  #每次请求提交后都会自动提交数据库中的变动
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite')  #当前目录下的data.sqlite
+app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True     #每次请求提交后都会自动提交数据库中的变动
 db = SQLAlchemy(app)
 
 #定义Role模型
