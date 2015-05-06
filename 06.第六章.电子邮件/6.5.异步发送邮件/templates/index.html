@@ -1,0 +1,24 @@
+{%  extends "base.html" %}
+
+<!-- 加载Bootstrap进行渲染表单  -->
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %} Flask {% endblock %}
+
+{% block page_content %}
+
+<div class="page-header">
+              <!-- if判断 -->    
+              <h1>Hello, {% if name %}{{ name }}{% else %}Strange{% endif %}!</h1>
+              
+              {% if not known %}
+              <p>很高兴认识你! </p>
+              {% else %}
+              <p>我们又见面了!</p>
+              {% endif %}
+</div>
+
+<!-- 使用wtf.quick_form()函数渲染NameForm对象  -->
+{{ wtf.quick_form(form) }}
+
+{% endblock %}
