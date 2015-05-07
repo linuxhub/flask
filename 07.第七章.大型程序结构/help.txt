@@ -2,4 +2,11 @@
 1.运行程序
 manage.py runserver  
 
+2.数据库迁移(类似备份数据)
+manage.py db init
+
+
+2.数据库恢复(还原备份)
+manage.py db upgrade
+
 2.使用了163邮箱来做邮件发送器
