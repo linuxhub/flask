@@ -7,8 +7,7 @@ manage.py runserver
 
 
 
-下面关于数据库的迁移.(自动创建数据库与表)
-可参考: http://www.linuxhub.org/?p=2501
+下面关于数据库的迁移
 
 01.数据库迁移(类似备份数据)
 manage.py db init
