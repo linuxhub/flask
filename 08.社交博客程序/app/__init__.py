@@ -34,9 +34,16 @@ def create_app(config_name):
     db.init_app(app)
     
     
-    #注册蓝本
+    #注册 main蓝本
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
+    
+    #注册 auth蓝本
+    from .auth import auth as auth_blueprint
+    app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    #url_prefix='/auth' 是可选参数,如果使用了,所有的路由都要加止前缀 
+    #上面这个URL就变成了:  http://127.0.0.1:5000/auth/login
+    
     
     return app
 
