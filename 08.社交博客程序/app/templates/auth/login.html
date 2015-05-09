@@ -3,7 +3,7 @@
 {% extends "base.html" %}
 {% import "bootstrap/wtf.html" as wtf %} <!-- 渲染登录表单  -->
 
-{% block title %}Flasky - Login{% endblock %}
+{% block title %}用户登录{% endblock %}
 
 {% block page_content %}
 <div class="page-header">
@@ -14,6 +14,16 @@
 <!-- 渲染登录表单  -->
 <div class="col-md-4">
        {{ wtf.quick_form(form) }}
+       
+       <br>
+       <p>
+       新用户？
+       <a href="{{ url_for('auth.register') }}"> 点击这里注册  </a>
+       </p>
 </div>
+
+
+
+
 
 {% endblock %}

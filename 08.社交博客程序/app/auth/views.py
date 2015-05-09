@@ -4,9 +4,10 @@
 
 from flask import  render_template, redirect, request, url_for, flash
 from . import auth
-from flask.ext.login import login_user, logout_user, login_required
+from flask.ext.login import login_user, logout_user, login_required, current_user
 from ..models import User
-from .forms import LoginForm
+from .forms import LoginForm, RegistrationForm #表单类
+from .. import db
 
 
 #用户登录
@@ -44,18 +45,16 @@ def logout():
 
 
 
-
-
-
-
-
-'''             
-1. 为啥在一定要在app/templates中创建auth文件夹？
-
-答: 因为Flask认为模板的路径是相对于程序模板文件夹而言的.
-为避免与main蓝本和后续的蓝本发生模板命名冲突,
-可以把蓝本使用的模板保存在单独的文件夹中.
-
-''' 
-
-
+#用户注册
+@auth.route('register', methods=['GET', 'POST'])
+def register():
+              form = RegistrationForm()
+              if form.validate_on_submit():
+                            user = User(email=form.email.data,
+                                        username=form.username.data,
+                                        password=form.password.data)
+                            db.session.add(user)
+                            flash(u'注册成功!  现在,您可以登录了.')
+                            return redirect(url_for('auth.login'))
+              return render_template('auth/register.html', form=form)
+                            
