@@ -11,12 +11,19 @@ from flask.ext.mail import Mail              #邮件
 from flask.ext.moment import Moment          #时间和日期 
 from flask.ext.sqlalchemy import SQLAlchemy  #数据操作
 from config import config    #加载配置文件(app/config.py)
+from flask.ext.login import LoginManager     #用户登录
+
 
 #初始化
 bootstrap = Bootstrap()
 mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
+
+#初始化Flask-Login
+login_manager = LoginManager()
+login_manager.session_protection = 'strong' #设置安全级别为"strong",Flask-Login会记录客户端IP地址和浏览器的用户代理信息,如果发现异动就退出用户.
+login_manager.login_view = 'auth.login'     #设置登录用户页面的端点.(登录路由在auth蓝本中定义,所以前面要加上蓝本的名字)
 
 
 def create_app(config_name):
@@ -33,6 +40,7 @@ def create_app(config_name):
     moment.init_app(app)
     db.init_app(app)
     
+    login_manager.init_app(app)
     
     #注册 main蓝本
     from .main import main as main_blueprint

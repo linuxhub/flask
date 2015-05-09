@@ -4,15 +4,18 @@
 {% block title %}Flasky{% endblock %}
 
 {% block page_content %}
+
 <div class="page-header">
-              <h1>Hello, {% if name %}{{ name }}{% else %}Stranger{% endif %}!</h1>
-              {% if not known %}
-              <p>Pleased to meet you!</p>
-              <p>很高兴认识你！</p>
-              {% else %}
-              <p>Happy to see you again!</p>
-              <p>高兴再次见到你！数据库中有你了..小子..</p>
-              {% endif %}
+    
+    <h1>亲, 
+    {% if current_user.is_authenticated() %}
+        {{ current_user.username }}
+    {% else %}
+        请登录
+    {% endif %}
+    </h1>
+    
 </div>
+
 {{ wtf.quick_form(form) }}
 {% endblock %}
