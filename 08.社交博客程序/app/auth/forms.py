@@ -43,13 +43,13 @@ class RegistrationForm(Form):
               def validate_email(self, field):
                             '''  验证邮件是否已注册  '''
                             if User.query.filter_by(email=field.data).first():
-                                          raise ValidationError('Email already registered.')
+                                          raise ValidationError(u'邮箱已注册.')
                             
               #验证函数2                            
               def validate_username(self, field):
                             '''  验证用户名是否已存在 '''
                             if User.query.filter_by(username=field.data).first():
-                                          raise ValidationError('Username already in user.')
+                                          raise ValidationError(u'用户名已存在.')
                            
               
               

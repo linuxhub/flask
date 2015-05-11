@@ -4,6 +4,8 @@
 
 import unittest
 from app.models import User
+import time
+from app import create_app, db
 
 
 class UserModelTestCase(unittest.TestCase):
@@ -29,5 +31,32 @@ class UserModelTestCase(unittest.TestCase):
                             u = User(password = 'zeping')
                             u2 = User(password = 'zeping')
                             self.assertTrue(u.password_hash != u2.password_hash)
-                                          
                             
+              def test_valid_confirmation_token(self):
+                            ## '''  测试 正确的用户 检验令牌  '''
+                            u = User(password='zeping')
+                            db.session.add(u)
+                            token = u.generate_confirmation_token() #生成令牌
+                            self.assertTrue(u.confirm(token))      #检验令牌
+                            
+              def test_invalid_confirmation_token(self):
+                            ## '''  测试 错误的用户 检验令牌  '''
+                            u1 = User(password='zeping')
+                            u2 = User(password='linuxhub')
+                            db.session.add(u1)
+                            db.session.add(u2)
+                            db.session.commit()
+                            token = u1.generate_confirmation_token()
+                            self.assertFalse(u2.confirm(token))
+                            
+
+                              
+              def test_expired_confirmation_token(self):
+                            ## ''' 测试令牌的有过期日期  '''
+                            u = User(password='zeping')
+                            db.session.add(u)
+                            db.session.commit()
+                            token = u.generate_confirmation_token(1) #过期时间1秒
+                            time.sleep(2) #延时2秒
+                            self.assertFalse(u.confirm(token))
+             

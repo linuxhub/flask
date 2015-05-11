@@ -1,0 +1,9 @@
+<p>{{ user.username }},感谢您注册linuxhub网站！</p>
+<br>
+
+<p>请点击下面的链接完成验证:</p> 
+<p><a href="{{ url_for('auth.confirm', token=token, _external=True) }}">点击这里</a></p>
+<p>{{ url_for('auth.confirm', token=token, _external=True) }}</p> 
+<p>(如果链接无法直接点击,请复制链接到您的浏览器地址栏打开.)</p>
+
+<p><small>注: 本邮件为系统自动发送,请勿回复.</small></p>
