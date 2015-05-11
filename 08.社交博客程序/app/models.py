@@ -57,7 +57,7 @@ class User(UserMixin, db.Model):
                 
               # 用户注册确认
               
-              def generate_confirmation_token(self, expiration=1):
+              def generate_confirmation_token(self, expiration=3600):
                             '''  生成一个令牌 '''
                             ''' 有效默认时间为 3600秒(60分钟=1小时) '''
                             s = Serializer(current_app.config['SECRET_KEY'], expiration)

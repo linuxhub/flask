@@ -51,5 +51,14 @@ class RegistrationForm(Form):
                             if User.query.filter_by(username=field.data).first():
                                           raise ValidationError(u'用户名已存在.')
                            
+
+class ChangePasswordForm(Form):
+              '''  修改密码 ''' 
+              old_password = PasswordField(u'原密码', validators=[Required()])
+              password = PasswordField(u'新密码', validators=[Required(), EqualTo('password2', message=u'您两次输入的新密码不一致')])
+              password2 = PasswordField(u'重输密码',validators=[Required()])
+              submit = SubmitField(u'更新密码')
+              
+              
               
               

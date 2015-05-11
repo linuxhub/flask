@@ -33,10 +33,19 @@
                                                         <li><a href="{{ url_for('main.index') }}">首页</a></li>
                                           </ul>
                                           
+                                          
                                           <!--  根据当前用户的登录状态分别显示“登录”或“退出”链接 -->
                                           <ul class="nav navbar-nav navbar-right">
                                            {% if current_user.is_authenticated() %} <!-- is_authernticated() 如果用户已经登录返回True, 否则返回False  -->
-                                           <li> <a href="{{ url_for('auth.logout') }}">退出</a> </li>
+                                           
+                                           <li class="dropdown">
+                                           <a href="#" class="dropdown-toggle" data-toggle="dropdown">账户<b class="caret"></b></a>                                           
+                                           <ul class="dropdown-menu">
+                                                <li> <a href="{{ url_for('auth.change_password') }}">更改密码 </a> </li>
+                                                <li> <a href="{{ url_for('auth.logout') }}">退出</a> </li>
+                                            <ul>                                          
+                                           </li>
+                                           
                                            {% else %}
                                            <li> <a href="{{ url_for('auth.login')}}">登录</a> </li>
                                            {% endif %}
