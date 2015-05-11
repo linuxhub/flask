@@ -51,13 +51,34 @@ class RegistrationForm(Form):
                             if User.query.filter_by(username=field.data).first():
                                           raise ValidationError(u'用户名已存在.')
                            
-
+#修改密码
 class ChangePasswordForm(Form):
               '''  修改密码 ''' 
               old_password = PasswordField(u'原密码', validators=[Required()])
               password = PasswordField(u'新密码', validators=[Required(), EqualTo('password2', message=u'您两次输入的新密码不一致')])
               password2 = PasswordField(u'重输密码',validators=[Required()])
               submit = SubmitField(u'更新密码')
+              
+              
+
+#重置密码              
+class PasswordResetRequestForm(Form):
+              '''  重置密码请求 '''
+              email = StringField(u'邮件地址', validators=[Required(),Length(1, 64),Email()] )
+              submit = SubmitField(u'重置密码')
+
+
+class PasswordResetForm(Form):
+              '''  重置密码  '''
+              email = StringField(u'账号', validators=[Required(), Length(1, 64), Email()] )
+              password = PasswordField(u'新密码', validators=[Required(), EqualTo('password2', message=u'您两次输入的新密码不一致') ])
+              password2 = PasswordField(u'重输密码', validators=[Required()])
+              submit = SubmitField(u'重置密码')
+              
+              def validate_email(self, field):
+                            if User.query.filter_by(email=field.data).first() is None:
+                                          raise ValidationError(u'您输入的账号(邮件地址)不存在.')
+              
               
               
               

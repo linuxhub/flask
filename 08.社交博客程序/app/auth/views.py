@@ -8,7 +8,7 @@ from flask.ext.login import login_user, logout_user, login_required, current_use
 from ..models import User
 from .. import db
 from ..email import send_email
-from .forms import LoginForm, RegistrationForm, ChangePasswordForm
+from .forms import LoginForm, RegistrationForm, ChangePasswordForm, PasswordResetRequestForm, PasswordResetForm
 
 
 #用户登录
@@ -128,8 +128,10 @@ def resend_confirmation():
 @login_required
 def change_password():
               form = ChangePasswordForm()
-              if form.validate_on_submit():
-                            if current_user.verify_password(form.old_password.data):
+              if form.validate_on_submit():                          
+
+                            #判断原始密码是否正确(如果正确赋值)
+                            if current_user.verify_password(form.old_password.data):  
                                           current_user.password = form.password.data
                                           db.session.add(current_user)
                                           flash(u'密码已更改.')
@@ -137,7 +139,51 @@ def change_password():
                             else:
                                           flash(u'原始密码错误')
               return render_template("auth/change_password.html", form=form)
-                            
+
+
+#重置密码
+@auth.route('/reset', methods=['GET', 'POST'])
+def password_reset_request():
+              
+              ''' 重置密码 (用户请求重置密码)  '''
+              
+              #如果用户没有登录就跳转到首页
+              if not current_user.is_anonymous():
+                            return redirect(url_for('main.index'))
+              
+              form = PasswordResetRequestForm()
+              if form.validate_on_submit():
+                            user = User.query.filter_by(email=form.email.data).first()
+                            if user:
+                                          token = user.generate_reset_token()
+                                          send_email(user.email, u'重置密码', 'auth/email/reset_password', user=user, token=token, next=request.args.get('next'))
+                                          #内容文件在: app/templates/auth/email/reset_password[.html|.txt] 
+                                           
+                                          flash(u'重置密码邮件已发送到您邮箱,请查收！')
+                            return redirect(url_for('auth.login'))
+              return render_template('auth/reset_password.html', form=form)
+
+
+@auth.route('/reset/<token>', methods=['GET', 'POST'])
+def password_reset(token):              
+              ''' 重置密码  '''
+              if not current_user.is_anonymous():
+                            return redirect(url_for('main.index'))
+              form = PasswordResetForm()
+              if form.validate_on_submit():
+                            user = User.query.filter_by(email=form.email.data).first()
+                            #如查用户不存在则跳转到首页                            
+                            if user is None:
+                                          return redirect(url_for('main.index'))
+                            if user.reset_password(token, form.password.data):
+                                          flash(u'密码已更新')
+                                          return redirect(url_for('auth.login'))
+                            else:
+                                          return redirect(url_for('main.index'))
+              return render_template('auth/reset_password.html', form=form)
+
+
+
 
     
               

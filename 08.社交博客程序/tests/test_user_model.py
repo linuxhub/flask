@@ -59,4 +59,29 @@ class UserModelTestCase(unittest.TestCase):
                             token = u.generate_confirmation_token(1) #过期时间1秒
                             time.sleep(2) #延时2秒
                             self.assertFalse(u.confirm(token))
-             
+                            
+                 
+                           
+                            
+              def test_valid_reset_token(self):
+                            #''' 测试 有效 重置令牌 '''
+                            u = User(password='zeping')
+                            db.session.add(u)
+                            db.session.commit()
+                            token = u.generate_reset_token()
+                            print "'\naaaa: %s \n" % token
+                            self.assertTrue(u.reset_password(token, 'linuxhub'))
+                            self.assertTrue(u.verify_password('linuxhub'))
+
+              def test_invaild_reset_token(self):
+                            #'''测试 无效 重置令牌    '''
+                            u1 = User(password='zeping')
+                            u2 = User(password='linuxhub')
+                            db.session.add(u1)
+                            db.session.add(u2)
+                            db.session.commit()
+                            token = u1.generate_reset_token()
+                            self.assertFalse(u2.reset_password(token, 'Linux'))
+                            self.assertTrue(u2.verify_password('linuxhub'))
+                            
+                

@@ -76,8 +76,27 @@ class User(UserMixin, db.Model):
                             self.confirmed = True
                             db.session.add(self)
                             return True
+                  
                 
-                
+              def generate_reset_token(self, expiration=3600):
+                            '''  重置密码  生成一个令牌  '''
+                            s = Serializer(current_app.config['SECRET_KEY'], expiration)
+                            return s.dumps({'reset': self.id})
+
+              def reset_password(self, token, new_password):
+                            '''  重置密码 '''
+                            s = Serializer(current_app.config['SECRET_KEY'])
+                            try:
+                                          data = s.loads(token)
+                            except:
+                                          return False
+                            if data.get('reset') != self.id:
+                                          return False
+                            self.password = new_password
+                            db.session.add(self)
+                            return True
+                            
+                             
               def __repr__(self):
                             return '<Role %r>' % self.username
               
