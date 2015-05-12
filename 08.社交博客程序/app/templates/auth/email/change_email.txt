@@ -1,0 +1,7 @@
+{{ user.username }},您好.
+              
+     您正在更改新的电子邮件,请点击以下连接进行确认:
+     {{ url_for('auth.change_email', token=token, _external=True) }}
+     (如果链接无法直接点击,请复制链接到您的浏览器地址栏打开.)
+              
+      注: 本邮件为系统自动发送,请勿回复.

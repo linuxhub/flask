@@ -30,9 +30,10 @@ class User(UserMixin, db.Model):
               id = db.Column(db.Integer, primary_key=True)                  #列名 id
               email = db.Column(db.String(64), unique=True, index=True)     #列名 email （用户使用电子邮件进行登录）
               username = db.Column(db.String(64), unique=True, index=True)  #列名 username  
+              role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))                
               password_hash = db.Column(db.String(128))                     #列名: 密码哈希散列
               confirmed = db.Column(db.Boolean, default=False)              #列名: 注册用户确认 (1表示已验证, 0表示没有验证)
-              role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))    
+               
 
 
               #用户登录
@@ -95,7 +96,33 @@ class User(UserMixin, db.Model):
                             self.password = new_password
                             db.session.add(self)
                             return True
-                            
+              
+              
+              
+              def generate_email_change_token(self, new_email, expiration=3600):
+                            '''  更改邮件地址 生成一个令牌  '''
+                            s = Serializer(current_app.config['SECRET_KEY'], expiration)
+                            return s.dumps({'change_email': self.id, 'new_email': new_email})
+
+
+              def change_email(self, token):
+                            '''  更改邮件地址 '''
+                            s = Serializer(current_app.config['SECRET_KEY'])
+                            try:
+                                          data = s.loads(token)
+                            except:
+                                          return False
+                            if data.get('change_email') != self.id:
+                                          return False
+                            new_email = data.get('new_email')
+                            if new_email is None:
+                                          return False
+                            if self.query.filter_by(email=new_email).first() is not None:
+                                          return False
+                            self.email = new_email
+                            db.session.add(self)
+                            return True              
+                        
                              
               def __repr__(self):
                             return '<Role %r>' % self.username
