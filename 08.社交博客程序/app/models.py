@@ -11,7 +11,7 @@ from . import login_manager
 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer #用户注册确认验证令牌
 from flask import current_app
-
+from datetime import datetime
 
 
 class Permission:
@@ -77,7 +77,13 @@ class User(UserMixin, db.Model):
               role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))                
               password_hash = db.Column(db.String(128))                     #列名: 密码哈希散列
               confirmed = db.Column(db.Boolean, default=False)              #列名: 注册用户确认 (1表示已验证, 0表示没有验证)
-               
+              #第10章.资料信息添加以下的字段
+              name = db.Column(db.String(64))                               #列名: 真实姓名   
+              location = db.Column(db.String(64))                           #列名: 所在址
+              about_me = db.Column(db.Text())                               #列名: 自我介绍                                     
+              member_since = db.Column(db.DateTime(), default=datetime.utcnow)  #列名: 注册日期  
+              last_seen = db.Column(db.DateTime(), default=datetime.utcnow)     #列名: 最后访问日期
+              
               
               #定义默认的用户角色
               def __init__(self, **kwargs):
@@ -179,13 +185,17 @@ class User(UserMixin, db.Model):
                             ''' 该方法在请求和赋予角色这两种权限之间进行位与操作 '''
                             return self.role is not None and \
                                    (self.role.permissions & permissions) == permissions
-             
+
               def is_administrator(self):
                             ''' 检查管理员权限 '''
-                            return self.can(Permissions.ADMINISTER)
+                            return self.can(Permission.ADMINISTER)
          
-                  
-                             
+              def ping(self):
+                            ''' 刷新用户的最后访问时间 '''
+                            self.last_seen = datetime.utcnow()
+                            db.session.add(self)
+                 
+                       
               def __repr__(self):
                             return '<Role %r>' % self.username
               

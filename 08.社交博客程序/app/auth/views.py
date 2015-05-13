@@ -92,17 +92,14 @@ def confirm(token):
 #处理程序中过滤未确认的帐户
 @auth.before_app_request
 def before_request():
-              
-              ''' 同时需要满足以下3个条件：
-                      1.用户已登录
-                      2.用户的帐户还未确认
-                      3.请求的端点不在认证蓝本中
-              '''
-              if current_user.is_authenticated()\
-                 and not current_user.confirmed \
-                 and request.endpoint[:5] != 'auth.'\
-                 and request.endpoint != 'static':
-                            return redirect(url_for('auth.unconfirmed')) 
+              ''' 1.处理程序中过滤未确认的帐户  '''
+              ''' 2.更新已登录用户的访问时间 '''
+              if current_user.is_authenticated():
+                            current_user.ping()   #更新已登录用户的访问时间
+                            if not current_user.confirmed \
+                               and request.endpoint[:5] != 'auth.' \
+                               and request.endpoint != 'static':
+                                          return redirect(url_for('auth.unconfirmed'))
               
 @auth.route('/unconfirmed')
 def unconfirmed():

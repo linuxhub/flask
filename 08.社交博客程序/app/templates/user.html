@@ -1,0 +1,52 @@
+<!-- 用户资料页面  -->
+
+{% block page_content %}
+
+<div class="page-header">
+
+<h1> {{ user.username }} </h1>
+
+{% if user.name or user.location %}
+
+              <p>
+              
+              <!-- 真实姓名 -->
+              {% if user.name  %}
+                            {{ user.name }}
+              {% endif %}
+              
+              <!-- 所在地  用户的location字段被渲染成指向badu地图的查询链接 -->
+              {% if user.location %}
+                           来自 <a href="http://maps.baidu.com/?q={{ user.location }}" target="_blank" >{{ user.location}} </a>
+              {% endif %}
+              </p>
+{% endif %}
+
+
+<!--  如果是是管理员用户登录, 则显示用户的电子邮件地址, 并渲染成maito链接 -->
+{% if current_user.is_administrator() %}
+              <p>
+              <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+              </p>
+{% endif %}
+
+
+
+<!--  自我介绍   -->
+{% if user.about_me %}
+              <p>
+              {{ user.about_me }}              
+              </p>
+{% endif %}
+
+
+<p> 
+注册日期:  {{ moment(user.member_since).format('L') }}. 
+</br>
+最后访问日期: {{ moment(user.last_seen).fromNow() }}.
+</p>
+
+
+</div>
+
+{% endblock %}
