@@ -47,6 +47,22 @@
 </p>
 
 
+<!-- 资料编辑的链接 -->
+<p>
+{% if user == current_user %}
+<a class="btn btn-default" href="{{ url_for('.edit_profile') }}">编辑资料 </a>
+{% endif %}
+<br/>
+<!-- 管理员使用的资料编辑链接  -->
+{% if current_user.is_administrator() %}
+<a class="btn btn-danger" href="{{ url_for('.edit_profile_admin', id=user.id) }}">编辑资料 [管理员]</a>
+{% endif %}
+        
+</p>
+
+
+
+
 </div>
 
 {% endblock %}

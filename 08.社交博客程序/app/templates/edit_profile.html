@@ -1,0 +1,14 @@
+<!-- 编辑用户资料页面 -->
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}Flasky - 编辑用户资料 {% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+    <h1>编辑用户资料</h1>
+</div>
+<div class="col-md-4">
+    {{ wtf.quick_form(form) }}
+</div>
+{% endblock %}

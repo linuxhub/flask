@@ -79,7 +79,7 @@ class User(UserMixin, db.Model):
               confirmed = db.Column(db.Boolean, default=False)              #列名: 注册用户确认 (1表示已验证, 0表示没有验证)
               #第10章.资料信息添加以下的字段
               name = db.Column(db.String(64))                               #列名: 真实姓名   
-              location = db.Column(db.String(64))                           #列名: 所在址
+              location = db.Column(db.String(64))                           #列名: 所在地
               about_me = db.Column(db.Text())                               #列名: 自我介绍                                     
               member_since = db.Column(db.DateTime(), default=datetime.utcnow)  #列名: 注册日期  
               last_seen = db.Column(db.DateTime(), default=datetime.utcnow)     #列名: 最后访问日期
