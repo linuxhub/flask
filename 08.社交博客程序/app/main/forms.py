@@ -48,3 +48,12 @@ class EditProfileAdminForm(Form):
                                User.query.filter_by(username=field.data).first():
                                           raise ValidationError(u'用户名已被使用.')
               
+
+#博客文章表单
+class PostForm(Form):
+              body = TextAreaField(u'你在想什么？', validators=[Required()] )
+              submit = SubmitField(u'发表')
+              
+              
+              
+              

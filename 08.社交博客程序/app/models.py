@@ -74,6 +74,8 @@ class Role(db.Model):
               def __repr__(self):
                             return '<Role %r>' % self.name
 
+
+
 #定义User模型 
 class User(UserMixin, db.Model):
               __tablename__ = 'users'                                       #表名 users
@@ -91,6 +93,7 @@ class User(UserMixin, db.Model):
               last_seen = db.Column(db.DateTime(), default=datetime.utcnow)     #列名: 最后访问日期
               #显示Gravatar头像所需要的              
               avatar_hash = db.Column(db.String(32))  #Gravatar头像生成的MD5值
+              posts = db.relationship('Post', backref='author', lazy='dynamic') #外链到posts文章表
               
 
               
@@ -253,10 +256,11 @@ def load_user(user_id):
               '''  如果找到用户,返回用户对象,否则返回 None  '''
               return User.query.get(int(user_id))
 
-
-
-
-
               
-
-
+#定义文章模型
+class Post(db.Model):
+              __tablename__ = 'posts'  #表名: posts
+              id = db.Column(db.Integer, primary_key=True)  #列名： 文章id 
+              body = db.Column(db.Text)                     #列名:  文章内容                         
+              timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow) #列名：时间戳
+              author_id = db.Column(db.Integer, db.ForeignKey('users.id'))     #作者id 链接到users表的id
