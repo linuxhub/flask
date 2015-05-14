@@ -14,6 +14,12 @@ from flask import current_app
 from datetime import datetime
 
 
+#显示Gravatar头像所需要的
+import hashlib
+from flask import request 
+
+
+
 class Permission:
               ''' 权限常量 （程序的权限） '''
               FOLLOW = 0x01            #关注用户（关注其他用户）
@@ -83,7 +89,10 @@ class User(UserMixin, db.Model):
               about_me = db.Column(db.Text())                               #列名: 自我介绍                                     
               member_since = db.Column(db.DateTime(), default=datetime.utcnow)  #列名: 注册日期  
               last_seen = db.Column(db.DateTime(), default=datetime.utcnow)     #列名: 最后访问日期
+              #显示Gravatar头像所需要的              
+              avatar_hash = db.Column(db.String(32))  #Gravatar头像生成的MD5值
               
+
               
               #定义默认的用户角色
               def __init__(self, **kwargs):
@@ -94,6 +103,11 @@ class User(UserMixin, db.Model):
                                                         self.role = Role.query.filter_by(permissions=0xff).first()
                                           if self.role is None:
                                                         self.role = Role.query.filter_by(default=True).first()
+                            
+                            #下面部分是缓存的Gravatar头像的产生MD5值
+                            if self.email is not None and self.avatar_hash is None:
+                                                        self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
+                            
 
               #用户登录
               @property  #@property作用是将方法函数变成了属性
@@ -177,6 +191,10 @@ class User(UserMixin, db.Model):
                             if self.query.filter_by(email=new_email).first() is not None:
                                           return False
                             self.email = new_email
+                            
+                            #下面这条是缓存的Gravatar头像的相关的
+                            self.avatar_hash = hashlib.md5(self.email.encode('utf-8')).hexdigest() #更换邮件地址后重新创建头像的md5值
+                            
                             db.session.add(self)
                             return True  
               
@@ -195,7 +213,20 @@ class User(UserMixin, db.Model):
                             self.last_seen = datetime.utcnow()
                             db.session.add(self)
                  
-                       
+              
+              #生成Gravatar头像的URL
+              def gravatar(self, size=100, default='identicon', rating='g'):
+                            '''  生成Gravatar头像URL '''
+                            if request.is_secure:
+                                          url = 'https://secure.gravatar.com/avatar'
+                            else:
+                                          url = 'http://www.gravatar.com/avatar'
+                            #hash = hashlib.md5(self.email.encode('utf-8')).hexdigest()
+                            hash = self.avatar_hash or hashlib.md5(self.email.encode('utf-8')).hexdigest()
+                            
+                            return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(url=url, hash=hash, size=size, default=default, rating=rating)
+                            #例: URL结果: http://www.gravatar.com/avatar/572bc94368fec49fab782b6cda3a3597?s=100&d=identicon&r=g
+                                    
               def __repr__(self):
                             return '<Role %r>' % self.username
               
