@@ -39,7 +39,8 @@ def user(username):
     #如果用户不存在则返回404错误
     if user is None:
         abort(404)
-    return render_template('user.html', user=user)
+    posts = user.posts.order_by(Post.timestamp.desc()).all() #获取该用户的博客文章资料页路由
+    return render_template('user.html', user=user, posts=posts)
 
 
 #用户员级别的资料编辑 
