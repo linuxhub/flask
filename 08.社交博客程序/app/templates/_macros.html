@@ -1,0 +1,58 @@
+<!-- 分页模板宏 -->
+
+<!-- pagination 这个值  -->
+<!--
+ prev_num  上一页
+ next_num  下一页
+-->
+
+{% macro pagination_widget(pagination, endpoint) %}
+<ul class="pagination">
+ 
+ 
+    <!-- "上一页"链接. 如果当前页是第一页，则为这个链接加上disabled类 -->
+    <li{% if not pagination.has_prev %} class="disabled"{% endif %}>
+        
+        <!-- 上一页   -->
+        <a href="{% if pagination.has_prev %}{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}{% else %}#{% endif %}">
+            &laquo; 
+        </a>
+    </li>
+
+    
+    {% for p in pagination.iter_pages() %} <!-- 所有页面链接 -->
+
+        {% if p %}
+            {% if p == pagination.page %} <!-- 当前页数 -->
+            
+            <li class="active">
+                <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+                
+            </li>
+ 
+            {% else %}
+
+            <li>
+                <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+            </li>
+
+            {% endif %}
+        {% else %}
+
+       <!-- 页数列表中的间隔使用省略号表示 -->
+        <li class="disabled"><a href="#">&hellip;</a></li>
+
+        {% endif %}
+    {% endfor %}
+    
+    
+    <!-- “下一页” 链接。 如果当前页是最后一页，则会禁用这这链接 -->
+    <li{% if not pagination.has_next %} class="disabled"{% endif %}> 
+         <!-- 下一页 -->
+        <a href="{% if pagination.has_next %}{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}{% else %}#{% endif %}">
+            &raquo;
+        </a>
+    </li>
+
+</ul>
+{% endmacro %}

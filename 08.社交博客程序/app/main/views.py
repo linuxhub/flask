@@ -2,7 +2,7 @@
 
 '''  蓝本中定义路由程序  '''
 
-from flask import render_template, redirect, url_for, abort, flash
+from flask import render_template, redirect, url_for, abort, flash, request, current_app
 from flask.ext.login import login_required, current_user
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm
@@ -27,9 +27,14 @@ def index():
         post = Post(body=form.body.data, author=current_user._get_current_object())
         db.session.add(post)
         return redirect(url_for('.index'))
-    posts = Post.query.order_by(Post.timestamp.desc()).all()    #按时间戳进行降序排序（大到小排序）
-    return render_template('index.html', form=form, posts=posts)
-
+    #posts = Post.query.order_by(Post.timestamp.desc()).all()    #按时间戳进行降序排序（大到小排序）
+    #return render_template('index.html', form=form, posts=posts)
+    
+    #分页(默认20条记录 paginate()方法 配置文件FLASKY_POSTS_PER_PAGE = 20 )
+    page = request.args.get('page', 1, type=int)
+    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
+    posts = pagination.items
+    return render_template('index.html', form=form, posts=posts, pagination=pagination)
 
 
 #用户资料页面的路由
