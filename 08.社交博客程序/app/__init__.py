@@ -12,6 +12,7 @@ from flask.ext.moment import Moment          #时间和日期
 from flask.ext.sqlalchemy import SQLAlchemy  #数据操作
 from config import config    #加载配置文件(app/config.py)
 from flask.ext.login import LoginManager     #用户登录
+from flask.ext.pagedown import PageDown      #富文本文章功能
 
 
 #初始化
@@ -19,6 +20,7 @@ bootstrap = Bootstrap()
 mail = Mail()
 moment = Moment()
 db = SQLAlchemy()
+pagedown = PageDown()  
 
 #初始化Flask-Login
 login_manager = LoginManager()
@@ -39,9 +41,9 @@ def create_app(config_name):
     mail.init_app(app)
     moment.init_app(app)
     db.init_app(app)
-    
     login_manager.init_app(app)
-    
+    pagedown.init_app(app)        #初始化Flask-PageDown
+        
     #注册 main蓝本
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)

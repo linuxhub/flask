@@ -27,6 +27,11 @@
 </div>
 {% endif %}
 
+{% endblock %}
 
 
+<!-- Flask-PageDown模板声明 -->
+{% block scripts %}
+{{ super() }}
+{{ pagedown.include_pagedown() }}
 {% endblock %}

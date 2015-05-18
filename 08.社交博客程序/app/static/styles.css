@@ -38,3 +38,11 @@ div.post-content {
     margin-left: 48px;
     min-height: 48px;
 }
+
+
+/* 富文本博客文章表单 */
+div.flask-pagedown-preview {
+    margin: 10px 0px 10px 0px;
+    border: 1px solid #e0e0e0;
+    padding: 4px;
+}

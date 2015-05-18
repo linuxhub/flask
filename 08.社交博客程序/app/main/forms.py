@@ -6,6 +6,8 @@ from wtforms import StringField, TextAreaField, BooleanField, SelectField, Submi
 from wtforms.validators import Required, Length, Email, Regexp
 from wtforms import ValidationError
 from ..models import Role, User
+from flask.ext.pagedown.fields import PageDownField #富文体编辑器
+
 
  
          
@@ -51,7 +53,8 @@ class EditProfileAdminForm(Form):
 
 #博客文章表单
 class PostForm(Form):
-              body = TextAreaField(u'你在想什么？', validators=[Required()] )
+              #body = TextAreaField(u'你在想什么？', validators=[Required()] ) #多行文体控件
+              body = PageDownField(u'你在想什么？', validators=[Required()] ) #Markdown富文本编辑器
               submit = SubmitField(u'发表')
               
               
