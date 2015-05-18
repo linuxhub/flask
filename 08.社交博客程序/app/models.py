@@ -13,6 +13,10 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer #用户�
 from flask import current_app
 from datetime import datetime
 
+#把Markdown文本转换成HTML
+import bleach 
+from markdown import markdown
+
 
 #显示Gravatar头像所需要的
 import hashlib
@@ -293,6 +297,8 @@ class Post(db.Model):
               body = db.Column(db.Text)                     #列名:  文章内容                         
               timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow) #列名：时间戳
               author_id = db.Column(db.Integer, db.ForeignKey('users.id'))     #作者id 链接到users表的id
+              body_html = db.Column(db.Text)      #列名: 博客文章HTML代码缓存（处理Markdown文本）
+                             
               
               #生成虚拟博客文章 （在做分页功能的时候需要大量的测试数据）
               ''' 使用: python manage.py shell
@@ -312,5 +318,16 @@ class Post(db.Model):
                                                    author=u)
                                           db.session.add(p)
                                           db.session.commit()
+                          
+                                          
+              #在Post模型中处理Markdown文本
+              @staticmethod
+              def on_changed_body(target, value, oldvalue, initiator):
+                            ''' 把body字段中的文本渲染成HTML格式,结果保存在body_html中,自动且高效地完成Markdown文本到时HTML的转换  '''
+                            allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li' , 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
+                            target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
+               # *备注: <pre> 看到时这标签你想起来了吧,是什么做用了吧. 写博客文章高亮代码常用用标签.. 哈哈              
               
+db.event.listen(Post.body, 'set', Post.on_changed_body) #只要这个类实例的body字段设了新值,函数就会自动被调用.
+               
               
