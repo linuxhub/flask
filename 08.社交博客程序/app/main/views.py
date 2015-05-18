@@ -95,3 +95,13 @@ def edit_profile_admin(id):
     form.location.data = user.location
     form.about_me.data = user.about_me
     return render_template('edit_profile.html', form=form, user=user)
+
+
+#博客文章的固定链接
+@main.route('/post/<int:id>')
+def post(id):
+    post = Post.query.get_or_404(id)
+    return render_template('post.html', posts=[post])
+    #与数据中 posts表中的id相对应的
+    
+    
