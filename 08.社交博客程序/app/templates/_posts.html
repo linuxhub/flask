@@ -21,11 +21,28 @@
     {% endif %}
     </div>
     
+   
+    <div class="post-footer">  
+
+    <!-- 编辑文章 -->
+    {% if current_user == post.author %}
+        <a href="{{ url_for('.edit', id=post.id) }}">
+        <span class="label label-primary">编辑</span>    
+        </a>
+
+                
+    {% elif current_user.is_administrator() %}
+        <a href="{{ url_for('.edit', id=post.id) }}"> 
+        <span class="label label-danger">编辑[管理员]</span>        
+        </a>
+    {% endif %}
+    
+
     <!-- 文章固定链接 -->
-    <div class="post-footer"> 
     <a href="{{ url_for('.post', id=post.id) }}">
-    <span class="label label-default"> 文章固定链接 </span>    
+    <span class="label label-default">文章固定链接</span>    
     </a>
+
     </div>
 
     

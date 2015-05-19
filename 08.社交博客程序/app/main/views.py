@@ -105,3 +105,30 @@ def post(id):
     #与数据中 posts表中的id相对应的
     
     
+
+#编辑博客文章
+@main.route('/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit(id):
+    ''' 只允许博客文章作者编辑文章,但管理员例外,管理员能编辑所有用户文章.
+        如果用户试图编辑其它用户的文章，视图函数会返回403错误
+    '''
+    
+    post = Post.query.get_or_404(id)
+    
+    #判断如查不是文章的作者或没有管理员权限的 跳转到 403页面
+    if current_user != post.author and not current_user.can(Permission.ADMINISTER):
+        abort(403)
+            
+    form = PostForm()
+    if form.validate_on_submit():
+        post.body = form.body.data
+        db.session.add(post)
+        flash(u'该文章已更新')
+        return redirect(url_for('.post', id=post.id))
+    form.body.data = post.body
+    return render_template('edit_post.html', form=form)
+
+
+        
+    

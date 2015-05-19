@@ -1,0 +1,21 @@
+<!--  博客文章编辑器 -->
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %} LinuxHub - 编辑文章 {% endblock %}
+
+{% block page_content %}
+<div class="page-header">
+<h1> 编辑文章 </h1>
+</div>
+
+<div>
+    {{ wtf.quick_form(form) }}  <!--  编辑文章 -->
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{{ pagedown.include_pagedown() }}
+{% endblock %}
