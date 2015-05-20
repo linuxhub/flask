@@ -13,6 +13,7 @@
 <thead> <tr><th>用户</th> <th>来自</th></tr> </thead>
 
 {% for follow in follows %}
+{% if follow.user != user %} <!-- 把自己这个粉丝,不要在这个显示出来 -->
 <tr>
 
 <td>
@@ -23,6 +24,7 @@
 </td>
 <td> {{ moment(follow.timestamp).format('L') }} </td> 
 </tr>
+{% endif %}
 {% endfor %}
 
 </table>

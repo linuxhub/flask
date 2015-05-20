@@ -70,10 +70,10 @@
 {% endif %}
 
 <!-- 显示用户的关注数, 点击关注 跳转到用户的关注用户页面 -->
-<a href="{{ url_for('.followed_by', username=user.username)}}">关注：<span class="badge">{{ user.followed.count()}}</span></a>
+<a href="{{ url_for('.followed_by', username=user.username)}}">关注：<span class="badge">{{ user.followed.count() -1 }}</span></a>
 
 <!-- 显示用户的粉丝, 点击粉丝 跳转到用户的粉丝用户页面 -->
-<a href="{{ url_for('.followers', username=user.username) }}">粉丝：<span class="badge">{{ user.followers.count()}}</span></a>      
+<a href="{{ url_for('.followers', username=user.username) }}">粉丝：<span class="badge">{{ user.followers.count() -1 }}</span></a>      
 
 {% if current_user.is_authenticated() and user != current_user and user.is_following(current_user) %}
               | <span class="label label-default">他关注了你</span>

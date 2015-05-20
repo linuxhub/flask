@@ -197,8 +197,8 @@ class UserModelTestCase(unittest.TestCase):
                             self.assertTrue(u1.is_following(u2))
                             self.assertFalse(u1.is_followed_by(u2))
                             self.assertTrue(u2.is_followed_by(u1))
-                            self.assertTrue(u1.followed.count() == 1)
-                            self.assertTrue(u2.followers.count() == 1)
+                            self.assertTrue(u1.followed.count() == 2)
+                            self.assertTrue(u2.followers.count() == 2)
                             
                             f = u1.followed.all()[-1]
                             self.assertTrue(f.followed == u2)
@@ -210,9 +210,9 @@ class UserModelTestCase(unittest.TestCase):
                             u1.unfollow(u2)
                             db.session.add(u1)
                             db.session.commit()
-                            self.assertTrue(u1.followed.count() == 0)
-                            self.assertTrue(u2.followers.count() == 0)
-                            self.assertTrue(Follow.query.count() == 0)
+                            self.assertTrue(u1.followed.count() == 1)
+                            self.assertTrue(u2.followers.count() == 1)
+                            self.assertTrue(Follow.query.count() == 2)
                             
                             u2.follow(u1)
                             db.session.add(u1)
@@ -220,4 +220,4 @@ class UserModelTestCase(unittest.TestCase):
                             db.session.commit()
                             db.session.delete(u2)
                             db.session.commit()
-                            self.assertTrue(Follow.query.count() == 0)
+                            self.assertTrue(Follow.query.count() == 1)
