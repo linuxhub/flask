@@ -10,7 +10,7 @@ from flask.ext.login import UserMixin, AnonymousUserMixin
 from . import login_manager
 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer #用户注册确认验证令牌
-from flask import current_app
+from flask import current_app, request
 from datetime import datetime
 
 #把Markdown文本转换成HTML
@@ -78,6 +78,12 @@ class Role(db.Model):
               def __repr__(self):
                             return '<Role %r>' % self.name
 
+# 关注关联表模型
+class Follow(db.Model):
+              __tablename__ = 'follows'
+              follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True) #关注者   (左边)
+              followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True) #被关注者 (右边)
+              timestamp = db.Column(db.DateTime, default=datetime.utcnow) #日期时间
 
 
 #定义User模型 
@@ -98,8 +104,22 @@ class User(UserMixin, db.Model):
               #显示Gravatar头像所需要的              
               avatar_hash = db.Column(db.String(32))  #Gravatar头像生成的MD5值
               posts = db.relationship('Post', backref='author', lazy='dynamic') #外链到posts文章表
+  
               
-
+              # 使用两个 一对多的关系实现的多对多的关系 【关注用户】
+              # 左边(关注者)              
+              followed = db.relationship('Follow',
+                                         foreign_keys=[Follow.follower_id],             #foreign_keys参数指定外键,防止外键间的歧义
+                                         backref=db.backref('follower', lazy='joined'), #lazy='joined'  加载记录,但使用联结
+                                         lazy='dynamic',                                #lazy='dynamic' 不加载记录，但提供加载记录的查询
+                                         cascade='all, delete-orphan')                  #启用所有默认层叠选项,而且删除孤儿记录
+              # 右边(被关注者)
+              followers = db.relationship('Follow',
+                                          foreign_keys=[Follow.followed_id],
+                                          backref=db.backref('followed', lazy='joined'),
+                                          lazy='dynamic',
+                                          cascade='all, delete-orphan')
+              
               
               #定义默认的用户角色
               def __init__(self, **kwargs):
@@ -262,7 +282,29 @@ class User(UserMixin, db.Model):
                                           except IntegrityError:
                                                         db.session.rollback()
                               
-                                    
+              # 关注关系的辅助方法 
+              def follow(self, user):
+                            ''' 关注 '''
+                            if not self.is_following(user):
+                                          f = Follow(followed=user)
+                                          #db.session.add(f)
+                                          self.followed.append(f)
+              
+              def unfollow(self, user):
+                            ''' 取消关注 '''
+                            f = self.followed.filter_by(followed_id=user.id).first()
+                            if f:             
+                                          #db.session.delete(f)
+                                          self.followed.remove(f)
+
+              def is_following(self, user):
+                            ''' 左边(关注者)的一对多关系中搜索指定用户,如果找到就返回True'''
+                            return self.followed.filter_by(followed_id=user.id).first() is not None
+
+              def is_followed_by(self, user):
+                            ''' 右边(被关注者)的一对多关系中搜索指定用户,如果找到就返回True  '''
+                            return self.followers.filter_by(follower_id=user.id).first() is not None              
+                      
               def __repr__(self):
                             return '<Role %r>' % self.username
               
@@ -329,5 +371,8 @@ class Post(db.Model):
                # *备注: <pre> 看到时这标签你想起来了吧,是什么做用了吧. 写博客文章高亮代码常用用标签.. 哈哈              
               
 db.event.listen(Post.body, 'set', Post.on_changed_body) #只要这个类实例的body字段设了新值,函数就会自动被调用.
+
+
+              
                
               
