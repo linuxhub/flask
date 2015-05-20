@@ -2,6 +2,10 @@
 
 {% extends "base.html" %}
 
+{% import "_macros.html" as macros %}
+
+{% block title %}LinuxHub - {{ user.username }}{% endblock %}
+
 {% block page_content %}
 
 <div class="page-header">
@@ -53,6 +57,34 @@
 </p>
 
 
+<p>发表文章数: {{  user.posts.count() }} </p>
+
+<p>
+<!-- 关注信息 start  -->
+{% if current_user.can(Permission.FOLLOW) and user != current_user %}
+              {% if not current_user.is_following(user) %}
+                            <a href="{{ url_for('.follow', username=user.username) }}" class="btn btn-primary">关注</a>              
+              {% else %}
+                            <a href="{{ url_for('.unfollow', username=user.username) }}" class="btn btn-default">取消关注</a>
+              {% endif %}
+{% endif %}
+
+<!-- 显示用户的关注数, 点击关注 跳转到用户的关注用户页面 -->
+<a href="{{ url_for('.followed_by', username=user.username)}}">关注：<span class="badge">{{ user.followed.count()}}</span></a>
+
+<!-- 显示用户的粉丝, 点击粉丝 跳转到用户的粉丝用户页面 -->
+<a href="{{ url_for('.followers', username=user.username) }}">粉丝：<span class="badge">{{ user.followers.count()}}</span></a>      
+
+{% if current_user.is_authenticated() and user != current_user and user.is_following(current_user) %}
+              | <span class="label label-default">关注了你</span>
+{% endif %}
+
+
+<!-- 关注信息 end -->
+</p>
+
+
+
 <!-- 资料编辑的链接 -->
 <p>
 {% if user == current_user %}
@@ -63,8 +95,7 @@
 <!-- 管理员使用的资料编辑链接  -->
 {% if current_user.is_administrator() %}
 <a class="btn btn-danger" href="{{ url_for('.edit_profile_admin', id=user.id) }}">编辑资料 [管理员]</a>
-{% endif %}
-        
+{% endif %}     
 </p>
 
 </div>
@@ -76,3 +107,6 @@
 {% include '_posts.html' %}
 
 {% endblock %}
+
+
+

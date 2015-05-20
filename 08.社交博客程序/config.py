@@ -13,9 +13,13 @@ class Config:
 
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'  #跨站请求伪造保护 密钥
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True   #每次请求结束后都会自动提交数据库中的变动
-
+    
     #分页文章列表 
     FLASKY_POSTS_PER_PAGE = 20   #默认20行
+    
+    #用户的关注与用户粉丝的列表分页默认数
+    FLASKY_FOLLOWERS_PER_PAGE = 50 #默认50行
+
 
     #邮箱发送配置
     MAIL_SERVER = 'smtp.163.com' #163邮箱  smtp
@@ -34,7 +38,7 @@ class Config:
     FLASKY_MAIL_SENDER = 'Flasky Admin <zepingmon@163.com>' #发件人
 
     #FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
-    FLASKY_ADMIN = 'root@linuxhub.org'    #收件人    
+    FLASKY_ADMIN = 'root@linuxhub.org'    #收件人 【管理员】 
     
     @staticmethod  #静态方法
     def init_app(app):

@@ -81,8 +81,8 @@ class Role(db.Model):
 # 关注关联表模型
 class Follow(db.Model):
               __tablename__ = 'follows'
-              follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True) #关注者   (左边)
-              followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True) #被关注者 (右边)
+              follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True) #自己     (左边)
+              followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True) #关注了谁 (右边)
               timestamp = db.Column(db.DateTime, default=datetime.utcnow) #日期时间
 
 
@@ -107,13 +107,13 @@ class User(UserMixin, db.Model):
   
               
               # 使用两个 一对多的关系实现的多对多的关系 【关注用户】
-              # 左边(关注者)              
+              # 左边(自己)              
               followed = db.relationship('Follow',
                                          foreign_keys=[Follow.follower_id],             #foreign_keys参数指定外键,防止外键间的歧义
                                          backref=db.backref('follower', lazy='joined'), #lazy='joined'  加载记录,但使用联结
                                          lazy='dynamic',                                #lazy='dynamic' 不加载记录，但提供加载记录的查询
                                          cascade='all, delete-orphan')                  #启用所有默认层叠选项,而且删除孤儿记录
-              # 右边(被关注者)
+              # 右边(关注了谁)
               followers = db.relationship('Follow',
                                           foreign_keys=[Follow.followed_id],
                                           backref=db.backref('followed', lazy='joined'),
