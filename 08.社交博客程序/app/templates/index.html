@@ -19,8 +19,22 @@
     {% endif %}
 </div>
 
+
+<!--  显示所有文章 显示用户关注的文章  -->
+<div class="post-tabs">
+    <ul class="nav nav-tabs">
+        <li{% if not show_followed %} class="active"{% endif %}><a href="{{ url_for('.show_all') }}">所有</a></li>
+        
+        {% if current_user.is_authenticated() %} <!-- 用户登录后才显示 -->
+        <li{% if show_followed %} class="active"{% endif %}><a href="{{ url_for('.show_followed') }}">我关注的</a></li>
+        {% endif %}
+    </ul>
+    {% include '_posts.html' %}
+</div>
+
+
+
 <!-- 分页显示  在博客文章列表下面添加分页导航  -->
-{% include '_posts.html' %}
 {% if pagination %}
 <div class="pagination">
     {{ macros.pagination_widget(pagination, '.index') }}

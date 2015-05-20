@@ -303,7 +303,18 @@ class User(UserMixin, db.Model):
 
               def is_followed_by(self, user):
                             ''' 右边(被关注者)的一对多关系中搜索指定用户,如果找到就返回True  '''
-                            return self.followers.filter_by(follower_id=user.id).first() is not None              
+                            return self.followers.filter_by(follower_id=user.id).first() is not None   
+              
+              #获取所关注的用户文章
+              @property
+              def followed_posts(self):
+                            ''' 获取所关注的用户文章 [联接查询] '''
+                            return Post.query.join(Follow, Follow.followed_id == Post.author_id).filter(Follow.follower_id == self.id)
+              
+              
+              
+              
+              
                       
               def __repr__(self):
                             return '<Role %r>' % self.username

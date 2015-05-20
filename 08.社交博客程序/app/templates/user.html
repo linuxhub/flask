@@ -76,7 +76,7 @@
 <a href="{{ url_for('.followers', username=user.username) }}">粉丝：<span class="badge">{{ user.followers.count()}}</span></a>      
 
 {% if current_user.is_authenticated() and user != current_user and user.is_following(current_user) %}
-              | <span class="label label-default">关注了你</span>
+              | <span class="label label-default">他关注了你</span>
 {% endif %}
 
 

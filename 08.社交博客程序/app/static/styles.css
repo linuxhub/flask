@@ -42,6 +42,8 @@ div.post-content {
 
 
 
+
+
 /* 富文本博客文章表单 */
 div.flask-pagedown-preview {
     margin: 10px 0px 10px 0px;
@@ -84,3 +86,17 @@ div.flask-pagedown-preview h3 {
 .post-body h3 {
     font-size: 120%;
 }
+
+
+/* 显示所有文章 或 所关注用户的文章 */
+div.post-tabs {
+    margin-top: 16px;
+}
+
+div.post-tabs ul.posts {
+  margin: 0px;
+  border-top: none;
+}
+
+
+

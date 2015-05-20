@@ -2,7 +2,7 @@
 
 '''  蓝本中定义路由程序  '''
 
-from flask import render_template, redirect, url_for, abort, flash, request, current_app
+from flask import render_template, redirect, url_for, abort, flash, request, current_app, make_response
 from flask.ext.login import login_required, current_user
 from . import main
 from .forms import EditProfileForm, EditProfileAdminForm, PostForm
@@ -32,9 +32,23 @@ def index():
     
     #分页(默认20条记录 paginate()方法 配置文件FLASKY_POSTS_PER_PAGE = 20 )
     page = request.args.get('page', 1, type=int)
-    pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
+    
+    # 显示所有博客文章 或 只显示所关注用户的博客文章 
+    show_followed = False  #默认显示所有文章
+    #如果cookie的show_followed字段中有值,则显示所关注用户的文章
+    if current_user.is_authenticated():
+        show_followed = bool(request.cookies.get('show_followed', ''))
+    if show_followed:
+        query = current_user.followed_posts #限制只显示所关注用户的文章
+    else:
+        query = Post.query  #显示所有文章
+            
+    #pagination = Post.query.order_by(Post.timestamp.desc()).paginate(page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
+    pagination = query.order_by(Post.timestamp.desc()).paginate(page, per_page=current_app.config['FLASKY_POSTS_PER_PAGE'], error_out=False)
     posts = pagination.items
-    return render_template('index.html', form=form, posts=posts, pagination=pagination)
+    #return render_template('index.html', form=form, posts=posts, pagination=pagination)
+    return render_template('index.html', form=form, posts=posts, show_followed=show_followed, pagination=pagination)
+
 
 
 #用户资料页面的路由
@@ -201,5 +215,23 @@ def followers(username):
     follows = [{'user': item.follower, 'timestamp': item.timestamp} for item in pagination.items] #转换成一个新列表,列表中的各元素都包含user和timestamp字段.
     return render_template('followers.html', user=user, title=u'的粉丝', endpoint='.followers', pagination=pagination,
                            follows=follows)
+
+
+# 所有文章 
+@main.route('/all')
+@login_required
+def show_all():
+    resp = make_response(redirect(url_for('.index')))
+    resp.set_cookie('show_followed', '', max_age=30*24*60*60)
+    return resp
+
+# 所关注用户的文章 
+@main.route('/followed')
+@login_required
+def show_followed():
+    resp = make_response(redirect(url_for('.index')))
+    resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
+    return resp
+
 
 
