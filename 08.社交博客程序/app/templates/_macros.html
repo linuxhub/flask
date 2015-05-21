@@ -6,7 +6,7 @@
  next_num  下一页
 -->
 
-{% macro pagination_widget(pagination, endpoint) %}
+{% macro pagination_widget(pagination, endpoint, fragment='') %}
 <ul class="pagination">
  
  
@@ -14,7 +14,7 @@
     <li{% if not pagination.has_prev %} class="disabled"{% endif %}>
         
         <!-- 上一页   -->
-        <a href="{% if pagination.has_prev %}{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }}{% else %}#{% endif %}">
+        <a href="{% if pagination.has_prev %}{{ url_for(endpoint, page=pagination.prev_num, **kwargs) }} {{ fragment}} {% else %}#{% endif %}">
             &laquo; 
         </a>
     </li>
@@ -26,14 +26,14 @@
             {% if p == pagination.page %} <!-- 当前页数 -->
             
             <li class="active">
-                <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+                <a href="{{ url_for(endpoint, page = p, **kwargs) }} {{ fragment}}">{{ p }}</a>
                 
             </li>
  
             {% else %}
 
             <li>
-                <a href="{{ url_for(endpoint, page = p, **kwargs) }}">{{ p }}</a>
+                <a href="{{ url_for(endpoint, page = p, **kwargs) }} {{ fragment}}">{{ p }}</a>
             </li>
 
             {% endif %}
@@ -49,7 +49,7 @@
     <!-- “下一页” 链接。 如果当前页是最后一页，则会禁用这这链接 -->
     <li{% if not pagination.has_next %} class="disabled"{% endif %}> 
          <!-- 下一页 -->
-        <a href="{% if pagination.has_next %}{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}{% else %}#{% endif %}">
+        <a href="{% if pagination.has_next %}{{ url_for(endpoint, page=pagination.next_num, **kwargs) }}{{fragment}}{% else %}#{% endif %}">
             &raquo;
         </a>
     </li>

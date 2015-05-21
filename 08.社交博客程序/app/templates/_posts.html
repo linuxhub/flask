@@ -42,7 +42,12 @@
     <a href="{{ url_for('.post', id=post.id) }}">
     <span class="label label-default">文章固定链接</span>    
     </a>
-
+    
+    <!-- 链接到博客文章的评论 -->
+    <a href="{{ url_for('.post', id=post.id) }}#comments">
+    <span class="label label-primary">{{ post.comments.count()}}评论</span>
+    </a>
+    
     </div>
 
     

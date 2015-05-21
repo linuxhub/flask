@@ -19,6 +19,10 @@ class Config:
     
     #用户的关注与用户粉丝的列表分页默认数
     FLASKY_FOLLOWERS_PER_PAGE = 50 #默认50行
+    
+    
+    #控制每页显示的评论数量
+    FLASKY_COMMENTS_PER_PAGE = 30  #评论默认30行
 
 
     #邮箱发送配置

@@ -120,6 +120,9 @@ class User(UserMixin, db.Model):
                                           lazy='dynamic',
                                           cascade='all, delete-orphan')
               
+              #用户评论 users表与comments表之间的一对多关系
+              comments = db.relationship('Comment', backref='author', lazy='dynamic')
+
               
               #定义默认的用户角色
               def __init__(self, **kwargs):
@@ -367,7 +370,10 @@ class Post(db.Model):
               timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow) #列名：时间戳
               author_id = db.Column(db.Integer, db.ForeignKey('users.id'))     #作者id 链接到users表的id
               body_html = db.Column(db.Text)      #列名: 博客文章HTML代码缓存（处理Markdown文本）
-                             
+              
+              #用户评论  posts表与comments表之间的一对多关系               
+              comments = db.relationship('Comment', backref='post', lazy='dynamic')
+              
               
               #生成虚拟博客文章 （在做分页功能的时候需要大量的测试数据）
               ''' 使用: python manage.py shell
@@ -398,6 +404,30 @@ class Post(db.Model):
                # *备注: <pre> 看到时这标签你想起来了吧,是什么做用了吧. 写博客文章高亮代码常用用标签.. 哈哈              
               
 db.event.listen(Post.body, 'set', Post.on_changed_body) #只要这个类实例的body字段设了新值,函数就会自动被调用.
+
+
+
+
+# 用户评论 Comment模型
+class Comment(db.Model):
+              __tablename__ = 'comments'
+              id = db.Column(db.Integer, primary_key=True)
+              body = db.Column(db.Text)
+              body_html = db.Column(db.Text)
+              timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+              disabled = db.Column(db.Boolean)
+              author_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+              post_id = db.Column(db.Integer, db.ForeignKey('posts.id'))
+              
+              
+              #把Markdown文本转成HTML 保存到body_html
+              @staticmethod
+              def on_changed_body(target, value, oldvalue, initiator):
+                            allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i', 'strong']
+                            target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'),tags=allowed_tags, strip=True))
+
+#在修改body字段内容时触发, #把Markdown文本转成HTML
+db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 
 
               

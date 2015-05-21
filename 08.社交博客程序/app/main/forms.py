@@ -57,6 +57,11 @@ class PostForm(Form):
               body = PageDownField(u'你在想什么？', validators=[Required()] ) #Markdown富文本编辑器
               submit = SubmitField(u'发表')
               
+
+#评论输入表单
+class CommentForm(Form):
+              body = StringField(u'输入您的评论', validators=[Required()])
+              submit = SubmitField(u'发表评论')
               
               
               
