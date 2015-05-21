@@ -43,8 +43,17 @@
                                           </ul>
                                           
                                           
-                                          <!--  根据当前用户的登录状态分别显示“登录”或“退出”链接 -->
+                                         
                                           <ul class="nav navbar-nav navbar-right">
+                                            
+                                            <!-- 管理评论链接 -->
+                                            {% if current_user.can(Permission.MODERATE_COMMENTS)%}
+                                            <li>
+                                            <a href="{{ url_for('main.moderate')}}">管理评论</a>
+                                            </li>
+                                            {% endif %}
+                                           
+                                           <!--  根据当前用户的登录状态分别显示“登录”或“退出”链接 -->
                                            {% if current_user.is_authenticated() %} <!-- is_authernticated() 如果用户已经登录返回True, 否则返回False  -->
                                            
                                            <li class="dropdown">

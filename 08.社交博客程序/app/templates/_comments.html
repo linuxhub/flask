@@ -1,3 +1,4 @@
+
 <ul class="comments">
 {% for comment in  comments %}
 <li class="comment">
@@ -13,15 +14,37 @@
  <div class="comment-author"> 
   <a href="{{ url_for('.user', username=comment.author.username) }}">{{ comment.author.username}}</a>
 </div>
+
+
+<!-- 渲染评论的正文 -->
 <div class="comment-body">
- {% if comment.body_html %}
-    {{ comment.body_html | safe }} 
- {% else %}
-    {{  comment.body }}
- {% endif %}
+{% if comment.disabled %}
+<p><i>该评论已被管理员禁止.</i></p>
+{% endif %}
+
+{% if moderate or not comment.disabled %} <!-- 对于普通用户  -->
+  {% if comment.body_html %}
+        {{ comment.body_html | safe }}
+  {% else %}
+       {{ comment.body }}
+  {% endif %}
+{% endif %}
 </div>
+
+{% if moderate %}  <!-- 对于协管员  -->
+<br/>
+ {% if comment.disabled %}
+     <a class="btn btn-default btn-xs" href="{{ url_for('.moderate_enable', id=comment.id, page=page) }}">启用</a>
+ {% else %}
+    <a class="btn btn-danger btn-xs" href="{{ url_for('.moderate_disable', id=comment.id, page=page)}}">禁止</a>
+ {% endif %}
+{% endif %}
+
+
 </div>
 
 </li>
 {% endfor%}
 </ul>
+
+

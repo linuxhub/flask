@@ -29,7 +29,7 @@ class Permission:
               FOLLOW = 0x01            #关注用户（关注其他用户）
               COMMENT = 0x02           #在他人的文章中发表评论 （在他人撰写的文章中发布评论）
               WRITE_ARTICLES = 0x04    #写文章  （写原创文章）
-              MODERATE_COMMENTS = 0x08 #管理他人发表的评论 （删除他人发表的不当评价）
+              MODERATE_COMMENTS = 0x08 #管理他人发表的评论 （删除他人发表的不当评论）
               ADMINISTER = 0x80        #管理员权限 （管理网站）
 
 

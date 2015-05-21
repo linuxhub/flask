@@ -1,0 +1,21 @@
+<!-- 评论管理页面的模板 -->
+{% extends "base.html" %}
+{% import "_macros.html" as macros %}
+
+{% block title %} LinuxHub - 评论管理 {% endblock %}
+
+{% block page_content %}
+
+<div class="page-header">
+  <h1> 评论管理  </h1>
+</div>
+
+{% set moderate = True %}  <!-- 这个变量用在_comments.htm模板中,决定是否渲染评论管理功能 -->
+{% include '_comments.html' %}  <!--  模板将渲染评论的工作交给 _comments.html模板完成  -->
+{% if pagination %}
+<div class="pagination">
+  {{ macros.pagination_widget(pagination, '.moderate')}}
+</div>
+{% endif %}
+
+{% endblock %}
