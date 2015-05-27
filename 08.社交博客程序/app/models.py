@@ -10,7 +10,7 @@ from flask.ext.login import UserMixin, AnonymousUserMixin
 from . import login_manager
 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer #用户注册确认验证令牌
-from flask import current_app, request
+from flask import current_app, request, url_for
 from datetime import datetime
 
 #把Markdown文本转换成HTML
@@ -21,6 +21,8 @@ from markdown import markdown
 #显示Gravatar头像所需要的
 import hashlib
 from flask import request 
+
+from app.exceptions import ValidationError
 
 
 
@@ -334,7 +336,38 @@ class User(UserMixin, db.Model):
                                                         user.follow(user)
                                                         db.session.add(user)
                                                         db.session.commit()
-                      
+                                                        
+              # 客户端API 支持基于令牌的认证
+              def generate_auth_token(self, expiration):
+                            ''' 使用编码后的用户id字段值生成一签名令牌,还指定了以秒为单位的过期时间 '''
+                            s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
+                            return s.dumps({'id': self.id}).decode('ascii')
+              @staticmethod
+              def verify_auth_token(token):
+                            ''' 接受的参数是一个令牌,如果令牌可用就返回对应的用户
+                                这是静态方法,因为只有解码令牌后才知道用户是谁
+                            '''
+                            s = Serializer(current_app.config['SECRET_KEY'])
+                            try:
+                                          data = s.loads(token)
+                            except:
+                                          return None
+                            return User.query.get(data['id'])
+              
+              #把用户转换成JSON格式的序列化字典(api相关)
+              def to_json(self):
+                            json_user = {
+                                          'url': url_for('api.get_post', id=self.id, _external=True),
+                                          'username': self.username,
+                                          'member_since': self.member_since,
+                                          'last_seen': self.last_seen,
+                                          'posts': url_for('api.get_user_posts', id=self.id, _external=True),
+                                          'followed_posts': url_for('api.get_user_followed_posts', id=self.id, _external=True),
+                                          'post_count': self.posts.count()
+                            }
+                            return json_user
+              
+              
               def __repr__(self):
                             return '<Role %r>' % self.username
               
@@ -354,7 +387,6 @@ class AnonymousUser(AnonymousUserMixin):
 login_manager.anonymous_user = AnonymousUser
 
 
-
 #加载用户的回调函数
 @login_manager.user_loader
 def load_user(user_id):
@@ -362,6 +394,8 @@ def load_user(user_id):
               return User.query.get(int(user_id))
 
               
+
+
 #定义文章模型
 class Post(db.Model):
               __tablename__ = 'posts'  #表名: posts
@@ -401,7 +435,30 @@ class Post(db.Model):
                             ''' 把body字段中的文本渲染成HTML格式,结果保存在body_html中,自动且高效地完成Markdown文本到时HTML的转换  '''
                             allowed_tags = ['a', 'abbr', 'acronym', 'b', 'blockquote', 'code', 'em', 'i', 'li' , 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
                             target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'), tags=allowed_tags, strip=True))
-               # *备注: <pre> 看到时这标签你想起来了吧,是什么做用了吧. 写博客文章高亮代码常用用标签.. 哈哈              
+               # *备注: <pre> 看到时这标签你想起来了吧,是什么做用了吧. 写博客文章高亮代码常用用标签.. 哈哈  
+               
+               
+              #把文章和json的序列转换(api相关)
+              def to_json(self):
+                            json_post = {
+                                          'url': url_for('api.get_post', id=self.id, _external=True),
+                                          'body': self.body,
+                                          'body_html': self.body_html,
+                                          'timestamp': self.timestamp,
+                                          'author': url_for('api.get_user', id=self.author_id, _external=True),
+                                          'comments': url_for('api.get_post_comments', id=self.id, _external=True),
+                                          'comment_count': self.comments.count()
+                            }
+                            return json_post
+ 
+              #从JSON格式数据创建一篇博客文章
+              @staticmethod
+              def from_json(json_post):
+                            body = json_post.get('body')
+                            if body is None or body == '':
+                                          raise ValidationError(u'文章没有内容')
+                            return Post(body=body)
+                            
               
 db.event.listen(Post.body, 'set', Post.on_changed_body) #只要这个类实例的body字段设了新值,函数就会自动被调用.
 
@@ -425,6 +482,30 @@ class Comment(db.Model):
               def on_changed_body(target, value, oldvalue, initiator):
                             allowed_tags = ['a', 'abbr', 'acronym', 'b', 'code', 'em', 'i', 'strong']
                             target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'),tags=allowed_tags, strip=True))
+
+
+
+
+              #把评论和json的序列转换(api相关)
+              def to_json(self):
+                            json_comment = {
+                                          'url': url_for('api.get_comment', id=self.id, _external=True),
+                                          'post': url_for('api.get_post', id=self.post_id, _external=True),
+                                          'body': self.body,
+                                          'body_html': self.body_html,
+                                          'timestamp': self.timestamp,
+                                          'author': url_for('api.get_user', id=self.author_id,
+                                                            _external=True),
+                            }
+                            return json_comment
+              
+              #从JSON格式数据生成评论
+              @staticmethod
+              def from_json(json_comment):
+                            body = json_comment.get('body')
+                            if body is None or body == '':
+                                          raise ValidationError(u'没有评论内容')
+                            return Comment(body=body)              
 
 #在修改body字段内容时触发, #把Markdown文本转成HTML
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)

@@ -1,0 +1,26 @@
+
+http://127.0.0.1:5000/api/v1.0/users/3           #用户id=3的用户信息
+http://127.0.0.1:5000/api/v1.0/users/3/posts/    #用户id=3的用户有所有文章
+http://127.0.0.1:5000/api/v1.0/users/3/timeline/ #用户id=3的用户 关注的文章列表
+
+http://127.0.0.1:5000/api/v1.0/posts/           #所有文章
+
+http://127.0.0.1:5000/api/v1.0/posts/114        #文章id=114的文章
+http://127.0.0.1:5000/api/v1.0/posts/114/comments/ #文章id=114的文章的评论
+
+
+
+使用HTTPie测试web服务
+pip install httpie  #安装
+
+#测试接口
+http --json GET http://127.0.0.1:5000/api/v1.0/posts/
+http --json GET http://127.0.0.1:5000/api/v1.0/users/3/posts/
+
+
+#测试wx@a.cn用户发表文章（内容Test2015）
+http --auth wx@a.cn:123 --json POST http://127.0.0.1:5000/api/v1.0/posts/ "body=Test2015"
+
+
+#认证令牌
+http --auth wx@a.cn:123 --json GET http://127.0.0.1:5000/api/v1.0/token

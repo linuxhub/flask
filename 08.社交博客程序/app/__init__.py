@@ -54,6 +54,9 @@ def create_app(config_name):
     #url_prefix='/auth' 是可选参数,如果使用了,所有的路由都要加止前缀 
     #上面这个URL就变成了:  http://127.0.0.1:5000/auth/login
     
+    # 注册API蓝本
+    from .api_1_0 import api as api_1_0_blueprint
+    app.register_blueprint(api_1_0_blueprint, url_prefix='/api/v1.0')    
     
     return app
 
