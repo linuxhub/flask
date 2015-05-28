@@ -509,8 +509,3 @@ class Comment(db.Model):
 
 #在修改body字段内容时触发, #把Markdown文本转成HTML
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
-
-
-              
-               
-              
