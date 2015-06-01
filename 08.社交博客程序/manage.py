@@ -71,5 +71,26 @@ def profile(length=25, profile_dir=None):
 
 
 
+# 部署命令 （每次安装或升级程序时只需要运行deploy命令）
+# 使用: python  manage.py  deploy
+@manager.command 
+def deploy():
+    ''' Run deployment tasks. '''
+    from flask.ext.migrate import upgrade
+    from app.models import Role, User
+    
+    #把数据库迁移到最新修订版本
+    upgrade()
+    
+    #创建用户角色
+    Role.insert_roles()
+    
+    # 让所有用户关注此用户
+    User.add_self_follows()
+    
+    
+
+
+
 if __name__ == '__main__':
     manager.run()
