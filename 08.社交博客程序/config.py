@@ -24,6 +24,11 @@ class Config:
     #控制每页显示的评论数量
     FLASKY_COMMENTS_PER_PAGE = 30  #评论默认30行
 
+    #数据库慢查询【性能】启用慢查询记录功能
+    SQLALCHEMY_RECORD_QUERIES = True    #启用记录查询统计数字的功能
+    FLASKY_SLOW_DB_QUERY_TIME = 0.5     #慢查询的时间阈值为0.5秒
+
+     
 
     #邮箱发送配置
     MAIL_SERVER = 'smtp.163.com' #163邮箱  smtp

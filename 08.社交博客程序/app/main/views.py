@@ -10,6 +10,9 @@ from .. import db
 from ..models import Role, User, Permission, Post, Comment
 from ..decorators import admin_required, permission_required
 
+from flask.ext.sqlalchemy import get_debug_queries #报告数据库的慢查询 【性能】
+
+
 
 
 #蓝本.路由
@@ -281,7 +284,7 @@ def moderate_disable(id):
     return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
 
 
-# 关闭服务器的路由
+# 关闭服务器的路由 【测试】
 @main.route('/shutdown')
 def server_shutdown():
     if not current_app.testing:
@@ -291,6 +294,18 @@ def server_shutdown():
         abort(500)
     shutdown()
     return 'Shutting down...'
+
+
+#  报告数据库的慢查询 【性能】
+@main.after_app_request
+def after_request(response):
+    for query in get_debug_queries():
+        if query.duration >= current_app.config['FLASKY_SLOW_DB_QUERY_TIME']:
+            current_app.logger.warning(
+                'Slow query: %s\nParameters: %s\nDuration: %fs\nContext: %s\n'
+                % (query.statement, query.parameters, query.duration,
+                   query.context))
+    return response
 
 
 

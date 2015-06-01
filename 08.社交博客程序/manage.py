@@ -56,7 +56,18 @@ def test(coverage=False):
         covdir = os.path.join(basedir, 'tmp/coverage')
         COV.html_report(directory=covdir)
         print(u'详细报告文件: file://%s/index.html' % covdir)
-        COV.erase()    
+        COV.erase()
+        
+    
+# 在请求分析监视下运行程序 【源码分析】
+# 使用: python manage.py profile
+@manager.command
+def profile(length=25, profile_dir=None):
+    """Start the application under the code profiler."""
+    from werkzeug.contrib.profiler import ProfilerMiddleware
+    app.wsgi_app = ProfilerMiddleware(app.wsgi_app, restrictions=[length],
+                                      profile_dir=profile_dir)
+    app.run()
 
 
 
